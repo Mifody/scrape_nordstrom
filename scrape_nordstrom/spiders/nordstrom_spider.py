@@ -10,9 +10,7 @@ from scrape_nordstrom.items import Product
 import urlparse
 import logging
 
-from scrapy.linkextractors import LinkExtractor
-
-from scrape_nordstrom.utils import xcontains, to_float
+from scrape_nordstrom.utils import xcontains, xtract, to_float
 
 class NordstromSpider(scrapy.Spider):
     '''
@@ -50,15 +48,18 @@ class NordstromSpider(scrapy.Spider):
     def parse_product(self, response):
         product = Product()
 
+        product['url'] = response.url
+
         # NAME
-        name = response("//h1/text()").extract()
+        name = xtract(response, "//h1/text()")
         if len(name) > 0:
             product['name'] = name[0]
         else:
             product['name'] = None
 
         # ITEM NUM
-        item_num = response("//span[contains(@class, 'style-number')]/text()").extract()
+        # item_num = response.xpath("//span[contains(@class, 'style-number')]/text()").extract()
+        item_num = xtract(response, xcontains('span', 'style-number'))
         if len(item_num) > 0:
             product['item_num'] = item_num[0].split('#')[-1].strip()
         else:
@@ -66,14 +67,21 @@ class NordstromSpider(scrapy.Spider):
 
         # PRICE
         # price = response("//span[contains(@class, )]")
-        price = response(xcontains('span', 'price-current')).extract()
+        # price = response.xpath(xcontains('span', 'price-current')).extract()
+        price = xtract(response, xcontains('span', 'price-current'))
         if len(price) == 0:
-            price = response(xcontains('span', 'regular-price')).extract()
+            # price = response.xpath(xcontains('span', 'regular-price')).extract()
+            price = xtract(response, xcontains('span', 'regular-price'))
 
         if len(price) > 0:
-            product['price'] = to_float(price[0])
+            product['price'] = price[0]
         else:
             product['price'] = None
+
+        data_script = response.xpath("//script[contains(., 'initialData')]/text()").extract()
+
+        if len(data_script) > 0:
+            product['data_script'] = data_script[0]
 
         yield product
 
