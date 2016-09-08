@@ -62,7 +62,7 @@ class NordstromSpider(scrapy.Spider):
 
         data_script = response.xpath("//script[contains(., 'initialData')]/text()").extract()
         if len(data_script) > 0:
-            product['data_script'] = transform_initial_data(data_script[0])
+            product['initial_data'] = transform_initial_data(data_script[0])
 
         yield product
 

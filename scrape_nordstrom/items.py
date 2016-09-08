@@ -27,4 +27,4 @@ class Product(scrapy.Item):
     condition = scrapy.Field()
     category = scrapy.Field()
     breadcrumbs = scrapy.Field()
-    data_script = scrapy.Field()
+    initial_data = scrapy.Field()

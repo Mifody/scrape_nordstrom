@@ -28,7 +28,7 @@ class UtilsTests(unittest.TestCase):
         assert val == 2234.42
 
     def test_json_transform(self):
-        test_str = "React.render(React.createElement(ProductDesktop, {\"initialData\":{\"Model\":{\"StyleModel\":{\"Id\":4180678, \"ApiVersion\":null}}}), document.getElementById( 'main' ));"
+        test_str = "React.render(React.createElement(ProductDesktop, {\"initialData\":{\"Model\":{\"StyleModel\":{\"Id\":4180678}, \"ApiVersion\":null}}}), document.getElementById( 'main' ));"
 
         val = transform_initial_data(test_str)
         assert len(val.keys()) > 0

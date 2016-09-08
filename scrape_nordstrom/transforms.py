@@ -21,6 +21,6 @@ def to_float(extract):
 def transform_initial_data(data_string):
     cleaned_string = re.sub('.*initialData.*?{', '{', data_string)
 
-    cleaned_string = re.sub('}\).*$', '}', cleaned_string)
+    cleaned_string = re.sub('}\).*$', '', cleaned_string)
     print(cleaned_string)
     return json.loads(cleaned_string)
