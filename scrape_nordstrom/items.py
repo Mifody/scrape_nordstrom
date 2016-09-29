@@ -7,7 +7,12 @@
 
 import scrapy
 
-
+# product from the products page
+class PProduct(scrapy.Item):
+    name = scrapy.Field()
+    pid = scrapy.Field()
+    url = scrapy.Field()
+    json = scrapy.Field()
 
 class Product(scrapy.Item):
     pid = scrapy.Field()

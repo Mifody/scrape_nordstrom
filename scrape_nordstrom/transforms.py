@@ -22,5 +22,10 @@ def transform_initial_data(data_string):
     cleaned_string = re.sub('.*initialData.*?{', '{', data_string)
 
     cleaned_string = re.sub('}\).*$', '', cleaned_string)
-    print(cleaned_string)
+    return json.loads(cleaned_string)
+
+def transform_products_data(data_string):
+    # cleaned_string = re.sub('^.*ProductResult\".*?{', '{', data_string)
+    cleaned_string = re.sub('^.*{\"data\"', '{\"data\"', data_string)
+    cleaned_string = re.sub('}\).*$', '}', cleaned_string)
     return json.loads(cleaned_string)

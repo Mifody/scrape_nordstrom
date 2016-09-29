@@ -1,6 +1,6 @@
 import unittest
 
-from scrape_nordstrom.transforms import add_field, to_float, transform_initial_data
+from scrape_nordstrom.transforms import add_field, to_float, transform_initial_data, transform_products_data
 
 class UtilsTests(unittest.TestCase):
     def setUp(self):
@@ -31,4 +31,9 @@ class UtilsTests(unittest.TestCase):
         test_str = "React.render(React.createElement(ProductDesktop, {\"initialData\":{\"Model\":{\"StyleModel\":{\"Id\":4180678}, \"ApiVersion\":null}}}), document.getElementById( 'main' ));"
 
         val = transform_initial_data(test_str)
+        assert len(val.keys()) > 0
+
+    def test_product_data_transform(self):
+        test_str = "React.render(React.createElement(ProductResultsDesktop.ProductResults, {\"data\":{\"ProductResult\":{\"time\":7}}}), document.getElementById( 'npr-product-results-page' ));"
+        val = transform_products_data(test_str)
         assert len(val.keys()) > 0

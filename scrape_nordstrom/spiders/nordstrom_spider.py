@@ -5,10 +5,10 @@ SPIDER
 import scrapy
 import urlparse
 
-from scrape_nordstrom.items import Product
+from scrape_nordstrom.items import Product, PProduct
 
 from scrape_nordstrom.utils import xcontains, xtract
-from scrape_nordstrom.transforms import add_field, to_float, transform_initial_data
+from scrape_nordstrom.transforms import add_field, to_float, transform_initial_data, transform_products_data
 
 
 class NordstromSpider(scrapy.Spider):
@@ -26,6 +26,25 @@ class NordstromSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse_products_page)
 
     def parse_products_page(self, response):
+
+        results_script = response.xpath("//script[contains(., 'ProductResultsDesktop.ProductResults')]/text()").extract()
+
+        results = transform_products_data(results_script[0])
+
+        for json in results['data']['ProductResult']['Products']:
+
+            p = PProduct()
+            p['name'] = json['Title']
+            p['pid'] = json['Id']
+            p['url'] = json['ProductPageUrl']
+            p['json'] = json
+            yield p
+
+
+
+
+
+
         product_page_pattern = "//p[@class='product-title']/a/@href"
         product_urls = response.xpath(product_page_pattern)
         # self.log(pprint(product_urls))
@@ -33,12 +52,14 @@ class NordstromSpider(scrapy.Spider):
             base_product = href.extract().split('?')[0]
             product_url = urlparse.urljoin(response.url, base_product)
 
-            yield scrapy.Request(product_url, callback=self.parse_product)
+            # yield scrapy.Request(product_url, callback=self.parse_product)
 
-    # pagination_pattern = "//div[@class='fashion-results-pager']/ul/li/a[@class='standard']/@href"
-    # page_urls = response.xpath(pagination_pattern).extract()
-    # for page_url in page_urls:
-    #   yield scrapy.Request(url = page_url, callback = self.parse_products_page)
+        # page_num_pattern = "//ul[@class='page-numbers']/li/a/@href"
+        # page_num_urls = response.xpath(page_num_pattern)
+        # for href in page_num_urls:
+            # products_url = urlparse.urljoin(response.url, href.extract())
+            # yield scrapy.Request(products_url, callback=self.parse_products_page)
+
 
     def parse_product(self, response):
         product = Product()
